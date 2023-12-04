@@ -62,11 +62,18 @@ ROBOTSTXT_OBEY = False
 #    "scrapy.extensions.telnet.TelnetConsole": None,
 #}
 
+FEEDS = {
+    'booksdata.json' : {
+        'format' : 'json',
+        'overwrite' : True
+        }
+}
+
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "bookscrapper.pipelines.BookscrapperPipeline": 300,
-#}
+ITEM_PIPELINES = {
+    "bookscrapper.pipelines.BookscrapperPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
