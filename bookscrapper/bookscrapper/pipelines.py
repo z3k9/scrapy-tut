@@ -6,7 +6,7 @@
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
-
+import mysql.connector
 
 class BookscrapperPipeline:
     def process_item(self, item, spider):
@@ -15,16 +15,10 @@ class BookscrapperPipeline:
 
         #Strip all whitespaces from strings
         field_names = adapter.field_names()
-        print(field_names)
         for field_name in field_names:
             print(field_name)
             if field_name != 'description':
-                value = adapter.get(field_name)
-                print('#######################')
-                print('#######################')
-                print('#######################')
-                print(value)
-                
+                value = adapter.get(field_name)                
                 adapter[field_name] = value[0].strip()
         
         #Category and product type --> switch to lowercase
@@ -38,10 +32,6 @@ class BookscrapperPipeline:
         price_keys = ['tax','price_excl_tax', 'price_incl_tax',]
         for price_key in price_keys:
             value = adapter.get(price_key)
-            print('#######################')
-            print('#######################')
-            print('#######################')
-            print(value)
             value = value.replace('£', '')
             adapter[price_key] = float(value)
 
@@ -81,3 +71,83 @@ class BookscrapperPipeline:
         return item
     
 
+class SaveToMySqlPipeline:
+
+    def __init__(self):
+        self.conn = mysql.connector.connect(
+            host = 'localhost',
+            user = 'root',
+            password = '$Oluwa4567',
+            database = 'books'
+        )
+
+        self.curr = self.conn.cursor()
+        self.curr.execute("""
+            CREATE TABLE IF NOT EXISTS books(
+                        id int NOT NULL auto_increment,
+                        url VARCHAR(255),
+                        title VARCHAR(255),
+                        upc VARCHAR(255),
+                        product_type VARCHAR(255),
+                        price_excl_tax DECIMAL,
+                        price_incl_tax DECIMAL,
+                        tax DECIMAL,
+                        availability INTEGER,
+                        no_of_reviews INTEGER,
+                        stars INTEGER,
+                        category VARCHAR(255),
+                        description text,
+                        PRIMARY KEY (id)
+            )""")
+    
+    def process_item(self ,item ,spider):
+        self.curr.execute("""
+            insert into books(
+                        url,
+                        title,
+                        upc,
+                        product_type,
+                        price_excl_tax,
+                        price_incl_tax,
+                        tax,
+                        availability,
+                        no_of_reviews,
+                        stars,
+                        category,
+                        description
+            ) values(
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+            )""", (
+            item["url"],
+            item["title"],
+            item["upc"],
+            item["product_type"],
+            item["price_excl_tax"],
+            item["price_incl_tax"],
+            item["tax"],
+            item["availability"],
+            item["no_of_reviews"],
+            item["stars"],
+            item["category"],
+            str(item["description"][0])
+            )
+        )
+        
+        self.conn.commit()
+        return item
+    
+    def close_spider(self, spider):
+        self.curr.close()
+        self.conn.close()
+    

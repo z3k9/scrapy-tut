@@ -15,7 +15,7 @@ NEWSPIDER_MODULE = "bookscrapper.spiders"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "bookscrapper (+http://www.yourdomain.com)"
-USER_AGENT = 'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
+#USER_AGENT = 'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
 
 
 # Obey robots.txt rules
@@ -46,9 +46,11 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
+SPIDER_MIDDLEWARES = {
 #    "bookscrapper.middlewares.BookscrapperSpiderMiddleware": 543,
-#}
+#    "bookscrapper.middlewares.ScrapeOpsFakeUserAgentMiddleware" : 400
+    "bookscrapper.middlewares.ScrapeOpsFakeBrowserHeaderAgentMiddleware" : 300
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
@@ -73,6 +75,7 @@ FEEDS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "bookscrapper.pipelines.BookscrapperPipeline": 300,
+#    "bookscrapper.pipelines.SaveToMySqlPipeline": 400
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -100,3 +103,11 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+ 
+SCRAPEOPS_API_KEY = '15000099-b034-4946-8b24-2c6d99012080'
+SCRAPEOPS_FAKE_BROWSER_HEADERS_ENDPOINT = 'https://headers.scrapeops.io/v1/browser-headers'
+SCRAPEOPS_FAKE_USER_AGENT_ENABLED = True
+SCRAPEOPS_NUM_RESULTS = 50
+
+
