@@ -6,6 +6,10 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os, dotenv
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BOT_NAME = "bookscrapper"
 
@@ -49,14 +53,17 @@ ROBOTSTXT_OBEY = False
 SPIDER_MIDDLEWARES = {
 #    "bookscrapper.middlewares.BookscrapperSpiderMiddleware": 543,
 #    "bookscrapper.middlewares.ScrapeOpsFakeUserAgentMiddleware" : 400
-    "bookscrapper.middlewares.ScrapeOpsFakeBrowserHeaderAgentMiddleware" : 300
 }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "bookscrapper.middlewares.BookscrapperDownloaderMiddleware": 543,
-#}
+
+DOWNLOADER_MIDDLEWARES = {
+    "bookscrapper.middlewares.BookscrapperDownloaderMiddleware": 543,
+    "bookscrapper.middlewares.ScrapeOpsFakeBrowserHeaderAgentMiddleware": 300,
+    "rotating_proxies_middlewares.RotatingProxyMiddleware" :610,
+    "rotating_proxies_middlewares.BanDetectionMiddleware" : 620
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -105,9 +112,15 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
  
-SCRAPEOPS_API_KEY = '15000099-b034-4946-8b24-2c6d99012080'
+SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
 SCRAPEOPS_FAKE_BROWSER_HEADERS_ENDPOINT = 'https://headers.scrapeops.io/v1/browser-headers'
 SCRAPEOPS_FAKE_USER_AGENT_ENABLED = True
 SCRAPEOPS_NUM_RESULTS = 50
 
 
+
+ROTATING_PROXY_LIST = [
+    '139.162.78.109:3128',
+    '20.24.43.214:80',
+    '162.223.94.164:80'
+]
